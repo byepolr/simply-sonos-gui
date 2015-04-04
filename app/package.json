@@ -1,7 +1,10 @@
 {
-  "name": "nodesonos-gui",
+  "name": "simply-sonos-gui",
   "version": "0.0.1",
   "main":"app.js",
+  "dependencies": {
+    "simply-sonos": "git+ssh://git@github.com:byepolr/simply-sonos.git"
+  },
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-less": "^0.12.0",

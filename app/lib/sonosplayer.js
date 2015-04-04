@@ -3,9 +3,8 @@ selectedDevice = null;
 
 SonosDevices = [];
 if(typeof require === "function"){
-  require("/Users/jasonjones/Projects/NodeSonos/lib/commands");
-  var Network = require("/Users/jasonjones/Projects/NodeSonos/lib/network");
-  var network = new Network();
+  var simplySonos = require('simply-sonos');
+  var network = new simplySonos.Network();
   console.log("Discovery mode");
   network.udp.discover({"timeout":5000});
 
