@@ -2,19 +2,19 @@
 selectedDevice = null;
 
 SonosDevices = [];
+Listener = null;
 if(typeof require === "function"){
-  var simplySonos = require('simply-sonos');
-  var network = new simplySonos.Network();
+  var sonos = require('simply-sonos');
   console.log("Discovery mode");
-  network.udp.discover({"timeout":5000});
+  Listener = sonos.discover.send({"timeout":5000});
 
-  network.udp.on("found-device", function(device){
+  Listener.on("found-device", function(device){
     console.log("Found New Device: "+device);
     SonosDevices.push(device);
     updateDeviceListing();
   });
 
-  network.udp.on("error", function(error){
+  Listener.on("error", function(error){
     console.log(error);
   });
 }
@@ -37,7 +37,7 @@ function selectDevice(deviceIndex){
 
 function updateTrackInfo(device){
   if(device && device.ipAddress != null){
-    this.getCurrentTrack.send({"ipAddress": device.ipAddress}, function(error, track){
+    sonos.getCurrentTrack.send({"ipAddress": device.ipAddress}, function(error, track){
       if(error){
         console.log(error);
       }else{
@@ -61,7 +61,7 @@ function updateDeviceDisplay(device){
 }
 
 function updateQueue(device){
-  this.getQueue.send({"ipAddress": device.ipAddress}, function(error, result){
+  sonos.getQueue.send({"ipAddress": device.ipAddress}, function(error, result){
     if(error){
       console.log(error);
     }else{
@@ -103,9 +103,9 @@ function playPauseSong(){
   var device = selectedDevice;
   if(device && device.ipAddress != null){
     if(isPlaying){
-      this.pause.send({"ipAddress": device.ipAddress}, callback);
+      sonos.pause.send({"ipAddress": device.ipAddress}, callback);
     }else{
-      this.play.send({"ipAddress": device.ipAddress}, callback);
+      sonos.play.send({"ipAddress": device.ipAddress}, callback);
     }
   
     function callback(error){
@@ -123,7 +123,7 @@ function playPauseSong(){
 function playNextSong(){
   var device = selectedDevice;
   if(device && device.ipAddress != null){
-    this.nextSong.send({"ipAddress": device.ipAddress}, function(error){
+    sonos.nextSong.send({"ipAddress": device.ipAddress}, function(error){
     if(error){
       console.log(error);
     }else{
@@ -155,7 +155,7 @@ function refreshAllData(device){
 function updateVolumeControl(device){
   device = device || selectedDevice
   if(device && device.ipAddress != null){
-    getVolume.send({"ipAddress":device.ipAddress}, function(error, result){
+    sonos.getVolume.send({"ipAddress":device.ipAddress}, function(error, result){
       var level = (Number(result.volume) > 0) ? Number(result.volume) : 0;
       $("#volume_slider").ionRangeSlider("update", {"from":level});
     });
@@ -190,7 +190,7 @@ function addToQueueAndProcess(data){
     isProcessing = true;
     var level = processingData.fromNumber;
     processingData = null;
-    setVolume.send({"ipAddress":selectedDevice.ipAddress, "level":level}, function(error){
+    sonos.setVolume.send({"ipAddress":selectedDevice.ipAddress, "level":level}, function(error){
       isProcessing = false;
       if(error){
         console.log(error);
